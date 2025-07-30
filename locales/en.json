@@ -1,0 +1,16 @@
+{
+  "interface": {
+    "title": "MultiPaste - World Language Text Sharing",
+    "subtitle": "Share text in any language - Supporting 50+ world languages",
+    "placeholder": "Enter your text in any language...",
+    "create": "Create Paste",
+    "copy": "Copy",
+    "download": "Download",
+    "translate": "Translate"
+  },
+  "languages": {
+    "detected": "Auto-detected language",
+    "select": "Select content language",
+    "family": "Language family"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "functions": {
+    "api/create.js": {
+      "maxDuration": 10
+    },
+    "api/paste/[id].js": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/^([a-zA-Z0-9-_]+^)$",
+      "destination": "/paste.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/^(.*^)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type"
+        }
+      ]
+    }
+  ]
+}

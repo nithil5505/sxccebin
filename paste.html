@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MultiPaste - View Paste</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600^&family=Noto+Sans+Arabic:wght@400;600^&family=Noto+Sans+Devanagari:wght@400;600^&family=Noto+Sans+Tamil:wght@400;600^&family=Noto+Sans+Telugu:wght@400;600^&family=Noto+Sans+Bengali:wght@400;600^&family=Noto+Sans+Thai:wght@400;600^&family=Noto+Sans+CJK+SC:wght@400;600^&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><a href="/">🌍 MultiPaste</a></h1>
+            <div class="paste-info">
+                <span id="pasteId"></span> | 
+                <span id="pasteViews"></span> views | 
+                <span id="pasteLanguage"></span> |
+                Created: <span id="pasteDate"></span>
+            </div>
+        </header>
+ECHO is off.
+        <main>
+            <div id="passwordForm" style="display: none;">
+                <h3>🔒 This paste is password protected</h3>
+                <div class="password-input">
+                    <input type="password" id="passwordInput" placeholder="Enter password">
+                    <button id="unlockBtn">🔓 Unlock</button>
+                </div>
+            </div>
+ECHO is off.
+            <div id="pasteContent" style="display: none;">
+                <div class="paste-actions">
+                    <button id="copyContent">📋 Copy Content</button>
+                    <button id="downloadBtn">💾 Download</button>
+                    <button id="rawBtn">📄 Raw View</button>
+                    <button id="translateBtn">🌐 Translate</button>
+                </div>
+ECHO is off.
+                <div class="content-wrapper" id="contentWrapper">
+                    <pre><code id="content" class="language-text"></code></pre>
+                </div>
+            </div>
+ECHO is off.
+            <div id="errorMessage" style="display: none;">
+                <h3>❌ Paste Not Found</h3>
+                <p>This paste may have expired or been deleted.</p>
+                <a href="/">🏠 Create a new paste</a>
+            </div>
+        </main>
+    </div>
+ECHO is off.
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+        const pasteId = window.location.pathname.substring(1);
+        loadPaste(pasteId);
+ECHO is off.
+        async function loadPaste(id) {
+            try {
+                const response = await fetch(`/api/paste/${id}`);
+                const data = await response.json();
+ECHO is off.
+                if (!response.ok) {
+                    throw new Error(data.error);
+                }
+ECHO is off.
+                if (data.passwordRequired) {
+                    showPasswordForm();
+                    return;
+                }
+ECHO is off.
+                displayPaste(data, id);
+ECHO is off.
+            } catch (error) {
+                showError();
+            }
+        }
+ECHO is off.
+        function showPasswordForm() {
+            document.getElementById('passwordForm').style.display = 'block';
+ECHO is off.
+            document.getElementById('unlockBtn').onclick = async () => {
+                const password = document.getElementById('passwordInput').value;
+ECHO is off.
+                try {
+                    const response = await fetch(`/api/paste/${pasteId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password })
+                    });
+ECHO is off.
+                    const data = await response.json();
+ECHO is off.
+                    if (response.ok) {
+                        document.getElementById('passwordForm').style.display = 'none';
+                        displayPaste(data, pasteId);
+                    } else {
+                        alert('Invalid password');
+                    }
+                } catch (error) {
+                    alert('Error unlocking paste');
+                }
+            };
+        }
+ECHO is off.
+        function displayPaste(data, id) {
+            document.getElementById('pasteId').textContent = id;
+            document.getElementById('pasteViews').textContent = data.views;
+            document.getElementById('pasteDate').textContent = new Date(data.createdAt).toLocaleString();
+ECHO is off.
+            // Set language info
+            if (data.languageInfo) {
+                document.getElementById('pasteLanguage').textContent = data.languageInfo.name;
+ECHO is off.
+                // Set text direction for content
+                const contentWrapper = document.getElementById('contentWrapper');
+                contentWrapper.style.direction = data.languageInfo.dir;
+                contentWrapper.style.textAlign = data.languageInfo.dir === 'rtl' ? 'right' : 'left';
+            }
+ECHO is off.
+            const contentElement = document.getElementById('content');
+            contentElement.textContent = data.content;
+ECHO is off.
+            document.getElementById('pasteContent').style.display = 'block';
+ECHO is off.
+            // Copy functionality
+            document.getElementById('copyContent').onclick = () => {
+                navigator.clipboard.writeText(data.content);
+                alert('Content copied to clipboard!');
+            };
+ECHO is off.
+            // Download functionality
+            document.getElementById('downloadBtn').onclick = () => {
+                const blob = new Blob([data.content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `paste-${id}.txt`;
+                link.click();
+                URL.revokeObjectURL(url);
+            };
+ECHO is off.
+            // Raw view
+            document.getElementById('rawBtn').onclick = () => {
+                const newWindow = window.open();
+                newWindow.document.write(`<pre style="font-family: monospace; white-space: pre-wrap; word-wrap: break-word; direction: ${data.languageInfo?.dir ^|^| 'ltr'};">${data.content}</pre>`);
+            };
+ECHO is off.
+            // Translate functionality
+            document.getElementById('translateBtn').onclick = () => {
+                const googleTranslateUrl = `https://translate.google.com/#auto/en/${encodeURIComponent(data.content)}`;
+                window.open(googleTranslateUrl, '_blank');
+            };
+        }
+ECHO is off.
+        function showError() {
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

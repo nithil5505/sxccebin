@@ -1,0 +1,30 @@
+{
+  "name": "multilingual-pastebin",
+  "version": "1.0.0",
+  "description": "Multilingual pastebin supporting 50+ world languages with random URLs",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step required'",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@vercel/kv": "^1.0.1"
+  },
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "engines": {
+    "node": "^>=18.0.0"
+  },
+  "keywords": [
+    "pastebin",
+    "multilingual",
+    "world-languages",
+    "text-sharing",
+    "random-urls",
+    "vercel",
+    "serverless"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
